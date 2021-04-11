@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+	
+<mapper namespace="com.cdms.dao.GradeMapper">
+
+	<select id="selectMyGrade" parameterType="Grade" resultType="Grade">
+		select *
+		from hgrade
+		where homeworkId=#{homework.id} and groupId=#{groupId} and studentId=#{student.id}
+	</select>
+	
+	<select id="selectMyAllGrade" parameterType="Grade" resultMap="GradewithHomework">
+		select g.*, h.name, h.maxGrade
+		from hgrade g, homework h
+		where groupId=#{groupId} and studentId=#{student.id} and g.homeworkId=h.id
+	</select>
+	
+	<resultMap type="Grade" id="GradewithHomework">
+		<result property="grade" column="grade"/>
+		<result property="homework.id" column="homeworkId"/>
+		<result property="homework.name" column="name"/>
+		<result property="homework.maxGrade" column="maxGrade"/>
+	</resultMap>
+	
+	<select id="selectGrade" parameterType="Grade" resultMap="GradewithStudent">
+		select g.*, u.username, u.identity
+		from hgrade g, user u
+		where homeworkId=#{homework.id} and groupId=#{groupId} and g.studentId=u.id
+	</select>
+	
+	<resultMap type="Grade" id="GradewithStudent">
+		<result property="grade" column="grade"/>
+		<result property="student.id" column="studentId"/>
+		<result property="student.username" column="username"/>
+		<result property="student.identity" column="identity"/>
+	</resultMap>
+	
+	<insert id="insertGrade" parameterType="Grade">
+		insert into hgrade(homeworkId,groupId,studentId,grade)
+		values(#{homework.id},#{groupId},#{student.id},#{grade})
+		on duplicate key update
+		grade=values(grade)
+	</insert>
+	
+	<update id="UpdateGrade" parameterType="Grade">
+		update hgrade
+		set grade=#{grade}
+		where homeworkId=#{homework.id} and studentId=#{student.id} and groupId=#{groupId}
+	</update>
+
+</mapper>

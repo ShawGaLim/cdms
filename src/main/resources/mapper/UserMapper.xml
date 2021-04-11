@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+	
+<mapper namespace="com.cdms.dao.UserMapper">
+
+	<select id="selectUserById" parameterType="String" resultType="User">
+		select *
+		from user
+		where id=#{id}
+	</select>
+	
+	<select id="selectUserByIdentity" resultType="User">
+		select *
+		from user
+		where identity = #{identity}
+		limit #{index}, #{size}
+	</select>
+	
+	<select id="countUserByIdentity" parameterType="String" resultType="Integer">
+		select count(*)
+		from user
+		where identity = #{identity}
+	</select>
+	
+	
+	<select id="selectAllUsers" resultType="User">
+		select *
+		from user
+	</select>
+	
+	<insert id="insertUser" parameterType="User">
+		insert into user(id, password, username, identity)
+		values(#{id}, #{id}, #{username}, #{identity})
+	</insert>
+	
+	<insert id="insertManyUsers" parameterType="List">
+		insert into user(id,password,username,identity)
+		values
+		<foreach collection="list" item="User" separator=",">
+			(#{User.id},#{User.id},#{User.username},#{User.identity})
+		</foreach>
+	</insert>
+	
+	<update id="updateUser" parameterType="User">
+		update user
+		<set>
+			<if test="password!=null and password!=''">
+				password=#{newPassword},
+			</if>
+			<if test="username!=null and username!=''">
+				username=#{username},
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<delete id="deleteUserById" parameterType="Integer">
+		delete
+		from user
+		where id=#{id}
+	</delete>
+	
+	<delete id="deleteAllUsers">
+		delete
+		from user
+	</delete>
+	
+</mapper>

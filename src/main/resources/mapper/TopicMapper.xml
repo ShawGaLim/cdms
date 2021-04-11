@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+	
+<mapper namespace="com.cdms.dao.TopicMapper">
+
+	<select id="selectTopicByCourseId" parameterType="Integer" resultType="Topic">
+		select *
+		from topic
+		where courseId=#{courseId}
+		limit #{index}, #{size}
+	</select>
+	
+	<select id="countTopicByCourseId" parameterType="Integer" resultType="Integer">
+		select count(*)
+		from topic
+		where courseId=#{courseId}
+	</select>
+	
+	<select id="selectTopicById" parameterType="Integer" resultType="Topic">
+		select *
+		from topic
+		where id=#{id}
+	</select>
+	
+	<select id="selectAllTopics" resultType="Topic">
+		select *
+		from topic
+	</select>
+	
+	<insert id="insertTopic" parameterType="Topic">
+		insert into topic(name,content,courseId,status)
+		values(#{name},#{content},#{courseId},#{status})
+	</insert>
+	
+	<insert id="insertManyTopics" parameterType="List">
+		insert into topic(name,content,courseId,status)
+		values
+		<foreach collection="list" item="Topic" separator=",">
+			(#{Topic.name},#{Topic.content},#{Topic.courseId},#{Topic.status})
+		</foreach>
+	</insert>
+	
+	<update id="updateTopic" parameterType="Topic">
+		update topic
+		<set>
+			<if test="name!=null and name!=''">
+				name=#{name},
+			</if>
+			<if test="content!=null and content!=''">
+				content=#{content},
+			</if>
+			<if test="status!=null and status!=''">
+				status=#{status},
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<delete id="deleteTopicById" parameterType="Integer">
+		delete 
+		from topic
+		where id=#{id}
+	</delete>
+	
+	<delete id="deleteTopicByCourseId" parameterType="Integer">
+		delete 
+		from topic
+		where courseId=#{courseId}
+	</delete>
+	
+	<delete id="deleteAllTopics">
+		delete 
+		from topic
+	</delete>
+			
+</mapper>

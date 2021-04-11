@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+	
+<mapper namespace="com.cdms.dao.StudentCourseMapper">
+
+	<select id="selectAllSCs" resultMap="SC">
+		select studentId, u.username, courseId, c.name, replyGrade, totalGrade, chooseTime
+		from user u,course c,sc sc
+		where sc.studentId=u.id and sc.courseId=c.id
+	</select>
+	
+	<select id="selectPageSCs" resultMap="SC">
+		select studentId, u.username, courseId, c.name, c.status, replyGrade, totalGrade, chooseTime
+		from user u,course c,sc sc
+		where sc.studentId=u.id and sc.courseId=c.id
+		limit #{index}, #{size}
+	</select>
+	
+	<select id="countAllSCs" resultType="Integer">
+		select count(*)
+		from sc
+	</select>
+	
+	<select id="selectSCByCourseId" resultMap="SC">
+		select studentId, u.username, courseId, c.name, c.status, replyGrade, totalGrade, chooseTime
+		from user u, course c, sc sc
+		where sc.courseId=#{courseId} and sc.studentId=u.id and sc.courseId=c.id
+		limit #{index}, #{size}
+	</select>
+	
+	<select id="selectSCByUserId" parameterType="Integer" resultMap="SC">
+		select studentId, u.username, courseId, c.*, replyGrade, totalGrade, chooseTime, t.id as teacherId, t.username as teacherName
+		from user u,course c,sc sc, user t
+		where sc.studentId=#{userId} and sc.studentId=u.id and sc.courseId=c.id and c.teacherId = t.id
+	</select>
+	
+	<select id="selectSC" parameterType="StudentCourse" resultMap="SC">
+		select studentId, u.username, courseId, c.name, c.status, replyGrade, totalGrade, chooseTime, t.id as teacherId, t.username as teacherName
+		from user u,course c,sc sc, user t
+		where sc.courseId=#{courseId} and sc.studentId=#{student.id} and sc.studentId=u.id 
+				and sc.courseId=c.id and c.teacherId = t.id
+	</select>
+	
+	<resultMap type="StudentCourse" id="SC">
+		<result property="student.id" column="studentId"/>
+		<result property="student.username" column="username"/>
+		<result property="course.id" column="courseId"/>
+		<result property="course.name" column="name"/>
+		<result property="course.status" column="status"/>
+		<result property="course.maxGroupMember" column="maxGroupMember"/>
+		<result property="course.maxReplyGrade" column="maxReplyGrade"/>
+		<result property="replyGrade" column="replyGrade"/>
+		<result property="totalGrade" column="totalGrade"/>
+		<result property="chooseTime" column="chooseTime"/>
+		<result property="course.teacher.id" column="teacherId"/>
+		<result property="course.teacher.username" column="teacherName"/>
+	</resultMap>
+	
+	<insert id="insertSC" parameterType="StudentCourse">
+		insert into sc(studentId, courseId)
+		values(#{student.id},#{course.id})
+	</insert>
+	
+	<insert id="insertManySCs" parameterType="List">
+		insert into sc(studentId, courseId)
+		values
+		<foreach collection="list" item="StudentCourse" separator=",">
+			(#{StudentCourse.student.id},#{StudentCourse.course.id})
+		</foreach>
+	</insert>
+	
+	<update id="updateSC">
+		update sc
+		set totalGrade=totalGrade+#{totalGrade},
+		where studentId=#{sid} and courseId=#{cid}
+	</update>
+	
+	<update id="updateReplyGrade" parameterType="StudentCourse">
+		update sc
+		set totalGrade=totalGrade-replyGrade+#{replyGrade}, replyGrade=#{replyGrade}
+		where studentId=#{student.id} and courseId=#{course.id}
+	</update>
+	
+	<delete id="deleteSCbyUserIdorCourseId" parameterType="StudentCourse">
+		delete
+		from sc
+		where studentId=#{student.id} and courseId=#{course.id} 
+	</delete>
+	
+	<delete id="deleteAllSCs">
+		delete
+		from sc
+	</delete>
+		
+</mapper>

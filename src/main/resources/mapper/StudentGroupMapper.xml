@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+	
+<mapper namespace="com.cdms.dao.StudentGroupMapper">
+	
+	<select id="selectSG" parameterType="StudentGroup" resultMap="SG">
+		select sg.*, s.username
+		from user s, cgroup g, sg sg
+		where s.id=sg.studentId and g.id=sg.groupId and g.courseId=sg.courseId and 
+		sg.courseId=#{courseId} and sg.studentId=#{student.id}
+	</select>
+	
+	<select id="selectLeader" parameterType="StudentGroup" resultMap="SG">
+		select *
+		from sg
+		where courseId=#{courseId} and groupId=#{groupId} and identity='组长'
+	</select>
+	
+	<select id="selectGroupSGs" parameterType="StudentGroup" resultMap="SG">
+		select sg.*, s.username
+		from user s, cgroup g, sg sg
+		where s.id=sg.studentId and g.id=sg.groupId and g.courseId=sg.courseId 
+			  and sg.courseId=#{courseId} and sg.groupId=#{groupId}
+	</select>
+	
+	<resultMap type="Studentgroup" id="SG">
+		<result property="courseId" column="courseId"/>
+		<result property="groupId" column="groupId"/>
+		<result property="student.id" column="studentId"/>
+		<result property="student.username" column="username"/>
+		<result property="identity" column="identity"/>
+	</resultMap>
+	
+	<insert id="insertSG" parameterType="StudentGroup">
+		insert into sg(courseId,groupId,studentId,identity)
+		values(#{courseId},#{groupId},#{student.id},#{identity})
+	</insert>
+	
+	<insert id="updateSG" parameterType="StudentGroup">
+		update sg
+		set identity=#{identity}
+		where courseId=#{courseId} and groupId=#{groupId} and studentId=#{student.id}
+	</insert>
+	
+	<delete id="deleteSG" parameterType="StudentGroup">
+		delete
+		from sg
+		where courseId=#{courseId} and groupId=#{groupId} and studentId=#{student.id}
+	</delete>
+		
+</mapper>

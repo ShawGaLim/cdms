@@ -1,0 +1,18 @@
+server:
+  port: 8888
+
+spring:
+  datasource:
+    url: jdbc:mysql://rm-wz94a83m45764z9j1mo.mysql.rds.aliyuncs.com:3306/cdms
+    username: cdms_manager
+    password: cdms_123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  type-aliases-package: com.cdms.pojo
+  mapper-locations: mapper/*.xml
+  
+logging:
+  config: classpath:logback-spring.xml
+  file:
+    path: logs

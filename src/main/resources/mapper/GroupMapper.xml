@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+	
+<mapper namespace="com.cdms.dao.GroupMapper">
+
+	<select id="selectGroup" resultMap="GwithT">
+		select *
+		from cgroup
+		where courseId=#{courseId} and id=#{id}
+	</select>
+	
+	<select id="selectGroupByCourseId" resultMap="GwithT">
+		select g.*, t.name as topicName
+		from cgroup g,topic t
+		where g.courseId=#{courseId} and g.topicId=t.id
+		union 
+		select g.*, null as topicName
+		from cgroup g
+		where courseId=#{courseId} and topicId is null
+		limit #{index}, #{size}
+	</select>
+	
+	<select id="selectGroupId" parameterType="Integer" resultType="Integer">
+		select id
+		from cgroup
+		where courseId=#{courseId}
+		order by id desc
+		limit 1
+	</select>
+	
+	<select id="countGroupWithTopic" parameterType="Integer" resultType="Integer">
+		select count(*)
+		from cgroup g,topic t
+		where g.courseId=#{courseId} and g.topicId=t.id
+	</select>
+	
+	<select id="countGroupWithoutTopic" parameterType="Integer" resultType="Integer">
+		select count(*)
+		from cgroup
+		where courseId=#{courseId} and topicId is null
+	</select>
+	
+	<select id="selectAllGroups" resultMap="GwithT">
+		select g.*, t.name as topicName
+		from cgroup g,topic t
+		where g.topicId=t.id 
+		union 
+		select *, topicId as topicName
+		from cgroup
+		where topicId is null
+	</select>
+	
+	<resultMap type="Group" id="GwithT">
+		<result property="courseId" column="courseId"/>
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="member" column="member"/>
+		<result property="createTime" column="createTime"/>
+		<result property="topic.id" column="topicId"/>
+		<result property="topic.name" column="topicName"/>
+	</resultMap>
+	
+	<insert id="insertGroup" parameterType="Group">
+		insert into cgroup(courseId,id,name)
+		values(#{courseId},#{id},#{name})
+	</insert>
+	
+	<update id="updateGroup" parameterType="Group">
+		update cgroup
+		<set>
+			<if test="name!=null and name!=''">
+				name=#{name},
+			</if>
+			<if test="topic!=null and topic!=''">
+				topicId=#{topic.id},
+			</if>
+			<if test="member!=null and member!=''">
+				<if test="member == 1">
+					member=member+1,
+				</if>
+				<if test="member == -1">
+					member=member-1,
+				</if>
+			</if>
+		</set>
+		where id=#{id} and courseId=#{courseId}
+	</update>
+	
+	<delete id="deleteGroup" parameterType="Group">
+		delete
+		from cgroup
+		where id=#{id} and courseId=#{courseId}
+	</delete>
+	
+	<delete id="deleteGroupByCourseId" parameterType="Integer">
+		delete
+		from cgroup
+		where courseId=#{courseId}
+	</delete>
+	
+	<delete id="deleteAllGroups">
+		delete
+		from cgroup
+	</delete>
+
+</mapper>
